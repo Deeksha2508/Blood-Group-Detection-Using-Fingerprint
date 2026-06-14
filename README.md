@@ -19,8 +19,8 @@ This approach provides a non-invasive, fast, and cost-effective alternative to t
 ---
 
 ## Dataset
+The fingerprint dataset used in this project was obtained from **Kaggle** and contains fingerprint images categorized into eight blood group classes.
 
-The dataset consists of fingerprint images categorized into **8 blood group classes**:
 
 - A+
 - A-
