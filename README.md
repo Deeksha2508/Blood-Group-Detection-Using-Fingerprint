@@ -1,237 +1,175 @@
-# Blood Group Detection Using Fingerprint Analysis
+# 🩸 Blood Group Detection Using Fingerprint
 
-## Project Overview
+Extended: Multi-Architecture Comparison + Explainable AI + Pairwise Fusion
 
-Blood Group Detection Using Fingerprint Analysis is a Machine Learning and Deep Learning project that predicts an individual's blood group from fingerprint images. The system uses image processing, handcrafted feature extraction, traditional machine learning algorithms, and deep learning models to classify fingerprints into different blood group categories.
-
-This approach provides a non-invasive, fast, and cost-effective alternative to traditional blood group testing methods.
+An end-to-end pipeline that predicts a person's blood group (`A+ A- B+ B- AB+ AB- O+ O-`) from a fingerprint image — combining classic hand-crafted-feature ML models with a 30-architecture CNN comparison, late fusion, and full explainability (SHAP, LIME, Grad-CAM).
 
 ---
 
-## Objectives
+## 1. Methodology
 
-- Predict blood groups using fingerprint images.
-- Apply image preprocessing techniques to enhance fingerprint quality.
-- Extract meaningful texture and ridge-based features.
-- Compare multiple Machine Learning models.
-- Improve prediction performance using Deep Learning and Ensemble Learning.
-
----
-
-## Dataset
-The fingerprint dataset used in this project was obtained from **Kaggle** and contains fingerprint images categorized into eight blood group classes.
-
-
-- A+
-- A-
-- B+
-- B-
-- AB+
-- AB-
-- O+
-- O-
-
-The dataset is organized into separate folders for each blood group.
-
----
-
-##  Methodology
-
-### 1. Image Preprocessing
-
-Fingerprint images undergo:
-
-- Grayscale conversion
-- Image resizing
-- CLAHE (Contrast Limited Adaptive Histogram Equalization)
-- Normalization
-
-These steps improve ridge visibility and image quality.
-
----
-
-### 2. Feature Extraction
-
-The project extracts texture and ridge features using:
-
-#### GLCM (Gray Level Co-occurrence Matrix)
-- Contrast
-- Correlation
-- Energy
-- Homogeneity
-
-#### LBP (Local Binary Pattern)
-- Local texture descriptors
-- Histogram-based features
-
-#### Gabor Filters
-- Ridge orientation analysis
-- Multi-scale texture extraction
-
-**Total Features Extracted: 154**
-
-| Feature Type | Number of Features |
-|-------------|------------------|
-| GLCM | 48 |
-| LBP | 26 |
-| Gabor | 80 |
-| Total | 154 |
-
----
-
-### 3. Machine Learning Models
-
-The following models were trained and evaluated:
-
-- Support Vector Machine (SVM)
-- Random Forest
-- Logistic Regression
-- XGBoost
-
-Performance metrics:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- Confusion Matrix
-
----
-
-### 4. Deep Learning Model
-
-A pretrained **ResNet18** model was fine-tuned using transfer learning.
-
-Features:
-
-- ImageNet pretrained weights
-- Data augmentation
-- Class-weighted loss
-- Dropout regularization
-- Cosine Annealing Learning Rate Scheduler
-
----
-
-### 5. Ensemble Learning
-
-A Late Fusion Ensemble was implemented by combining:
-
-- SVM Predictions
-- Random Forest Predictions
-- ResNet18 Predictions
-
-Weighted averaging was used to improve classification performance.
-
----
-
-##  Technologies Used
-
-- Python
-- OpenCV
-- NumPy
-- Pandas
-- Matplotlib
-- Scikit-Learn
-- Scikit-Image
-- PyTorch
-- TorchVision
-- XGBoost
-
----
-
-## Evaluation Metrics
-
-The project evaluates model performance using:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- Confusion Matrix
-- Cross Validation
-
----
-
-##  Installation
-
-### Clone Repository
-
-```bash
-git clone https://github.com/yourusername/Blood-Group-Detection-Using-Fingerprint.git
-
-cd Blood-Group-Detection-Using-Fingerprint
-```
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
+```mermaid
+flowchart TD
+    A[Fingerprint Image] --> B[CLAHE Preprocessing]
+    B --> C[GLCM + LBP + Gabor<br/>Features]
+    B --> D[30 CNN Architectures<br/>incl. EfficientNet B0-B4]
+    C --> E[SVM / RF / LR / XGBoost]
+    D --> F[Time Complexity:<br/>FLOPs, Big-O, runtime est.]
+    E --> G[Test Accuracy + Timing +<br/>Big-O Report]
+    F --> G
+    G --> H[Late Fusion<br/>all 5 models]
+    H --> I[Pairwise Late Fusion<br/>every 2-model combo]
+    I --> J[Explainable AI<br/>SHAP + LIME]
+    J --> K[Grad-CAM +<br/>Single Prediction]
+    K --> L[Save Outputs to Drive]
 ```
 
 ---
 
-## Running the Project
+## 2. Description
 
-1. Place the fingerprint dataset inside the project directory.
-2. Open the Jupyter Notebook:
+- **Task** = 8-class classification of blood group from fingerprint image
+- **Classes** = `A+, A-, B+, B-, AB+, AB-, O+, O-`
+- **Image size** = 128 × 128, CLAHE-enhanced grayscale
+- **Feature-based models** = SVM, Random Forest, Logistic Regression, XGBoost (154 hand-crafted GLCM + LBP + Gabor features)
+- **CNN models** = 30 architectures trained and compared (see table below)
+- **Final selection protocol** = 9 shortlisted CNNs re-evaluated across **3 seeds each** (27 runs total) to avoid picking a "lucky" single run — ranked by mean ± std accuracy
+- **Fusion** = accuracy-weighted late fusion, both all-5-models and every pairwise 2-model combination
+- **Explainability** = SHAP (Tree/Kernel/Gradient explainers) + LIME (tabular + image) + Grad-CAM
 
-```bash
-jupyter notebook
+---
+
+## 3. CNN Architectures Compared (30 total)
+
+| Family | Models |
+|---|---|
+| Paper Baseline | PaperCNN (lightweight CNN from paper) |
+| Classic | LeNet-5, AlexNet |
+| Segmentation Encoder | UNet |
+| VGG | VGG11, VGG13, VGG16, VGG19 |
+| ResNet | ResNet18 (original), ResNet34, ResNet50, ResNet101 |
+| GoogLeNet / Inception | GoogLeNet, InceptionV3 |
+| DenseNet | DenseNet121, DenseNet169, DenseNet201 |
+| MobileNet | MobileNetV2, MobileNetV3-Small/Large |
+| EfficientNet | B0, B1, B2, B3, B4 |
+| SqueezeNet | 1_0, 1_1 |
+| ShuffleNet | ShuffleNetV2 |
+| RegNet | RegNetY-400MF |
+| ConvNeXt | ConvNeXt-Tiny |
+
+**Shortlisted for final multi-seed comparison (9):** DenseNet-121, MobileNetV2, ResNet-18, ResNet-50, EfficientNet-B0 → B4 — each run 3× with seeds `42, 123, 2024`, 30 epochs. The winner is retrained standalone for 50 epochs to report final numbers.
+
+---
+
+## 4. Model Performance
+
+| Model type | Approach | Metric tracked |
+|---|---|---|
+| Hand-crafted + ML | SVM / RF / LR / XGBoost on GLCM+LBP+Gabor features | Accuracy, F1, ROC-AUC (5-fold CV) |
+| CNN | Best of 30 architectures (multi-seed validated) | Val accuracy, F1, precision, recall, AUC |
+| Late Fusion (5-way) | Best CNN + SVM + RF + LR + XGBoost, accuracy-weighted | Fused accuracy |
+| Late Fusion (pairwise) | Every 2-model combination, ranked | Fused accuracy per pair |
+
+*Exact leaderboard numbers are generated at runtime into `cnn_architecture_results.csv` and `seed_reevaluation_all_runs.csv` — see Outputs below.*
+
+---
+
+## 5. Explainable AI
+
+| Model | Method |
+|---|---|
+| Random Forest / XGBoost | SHAP `TreeExplainer` |
+| SVM / Logistic Regression | SHAP `KernelExplainer` |
+| Best CNN | SHAP `GradientExplainer` + Grad-CAM |
+| SVM / RF / LR / XGBoost | LIME `LimeTabularExplainer` |
+| Best CNN | LIME `LimeImageExplainer` |
+
+Grad-CAM automatically targets the winning CNN architecture to visualize which fingerprint ridges drove each prediction.
+
+---
+
+## 6. Project Structure
+
+```
+blood-group-fingerprint-detection/
+│
+├── notebooks/
+│   └── total_fixed.ipynb            # Main Colab notebook (this file)
+│
+├── data/
+│   └── fingerprint_dataset.zip      # Raw dataset (8 class folders)
+│
+├── outputs/
+│   ├── svm_model.pkl / rf_model.pkl / logistic_model.pkl / xgb_model.pkl
+│   ├── scaler.pkl
+│   ├── <best_cnn_name>_final50ep.pth
+│   ├── X_features.npy / y_labels.npy
+│   ├── cnn_architecture_results.csv
+│   ├── seed_reevaluation_all_runs.csv
+│   ├── architecture_time_complexity.csv
+│   └── *.png                        # comparison / confusion-matrix plots
+│
+└── README.md
 ```
 
-3. Run:
+---
 
+## 7. Getting Started
+
+**1. Open in Google Colab**
+
+Upload `total_fixed.ipynb` to Colab (GPU runtime recommended — T4 or better).
+
+**2. Install dependencies**
 ```bash
-Blood_Group_Detection_usingFingerPrintAnalysis_AI_Project.ipynb
+pip install -q scikit-image scikit-learn torch torchvision opencv-python-headless
+pip install -q matplotlib seaborn tqdm pillow grad-cam xgboost thop
+pip install -q shap lime
 ```
 
----
+**3. Mount Google Drive & add the dataset**
 
-##  Results
+Place `fingerprint_dataset.zip` in `My Drive/`, containing one folder per class:
+```
+fingerprint_dataset/
+├── A+/  ├── A-/  ├── B+/  ├── B-/
+├── AB+/ ├── AB-/ ├── O+/  └── O-/
+```
 
-- Successfully extracted fingerprint texture features.
-- Compared multiple machine learning algorithms.
-- Fine-tuned ResNet18 for fingerprint classification.
-- Improved prediction performance using ensemble learning.
-- Demonstrated the feasibility of non-invasive blood group prediction using fingerprints.
+**4. Run all cells in order**
 
----
-
-## Future Improvements
-
-- Collect larger and more diverse datasets.
-- Deploy the model as a web application.
-- Develop a real-time fingerprint scanner integration.
-- Explore advanced CNN architectures such as EfficientNet and Vision Transformers.
-- Improve ensemble strategies for higher accuracy.
-
-
-## Team Contribution
-
-This project was developed collaboratively by a two-member team.
-
-### My Contributions (Deeksha Sharma)
-
-- Collected, organized, and prepared the fingerprint dataset for model training and evaluation.
-- Implemented feature extraction techniques including GLCM, LBP, and Gabor Filters to obtain texture and ridge-based fingerprint features.
-- Assisted in data preprocessing and feature engineering.
-- Created and maintained the GitHub repository, including project documentation, README preparation, and version control.
-
-### Collaborator Contributions
-
-- Developed and trained machine learning and deep learning models.
-- Implemented model optimization and ensemble learning techniques.
-- Conducted model evaluation, performance analysis, and experimentation.
-- Assisted in project integration and final testing.
----
-
-## Author
-
-Deeksha Sharma
-
-GitHub:https://github.com/Deeksha2508/ 
-
-
+Steps 1 → 11 run the full pipeline: preprocessing → feature/CNN training → comparison → fusion → explainability → single-image prediction → save outputs to Drive.
 
 ---
 
+## 8. Tech Stack
+
+`opencv-python` · `scikit-image` (GLCM, LBP) · `scikit-learn` · `xgboost` · `torch` / `torchvision` · `thop` (FLOPs) · `shap` · `lime` · `grad-cam` · `matplotlib` · `seaborn` · `tqdm`
+
+---
+
+## 9. Time & Complexity Reporting
+
+Every architecture is profiled for:
+- **FLOPs & trainable params** (via `thop`)
+- **Big-O forward-pass complexity** per model family
+- **Light / Medium / Heavy** runtime bucket, calibrated against real per-epoch timings on a T4 GPU
+
+Theoretical complexity for the classic ML models is reported alongside the CNNs (e.g. SVM RBF: `O(n²·d)`–`O(n³·d)` train, Random Forest: `O(T·n·log n·d)` train).
+
+---
+
+## 10. Future Improvements
+
+- [ ] Package the winning CNN + fusion pipeline as a REST API (FastAPI)
+- [ ] Build a simple upload-and-predict web demo
+- [ ] Expand the dataset for better class balance across all 8 blood groups
+- [ ] Try attention-based / transformer vision backbones
+- [ ] Automate the multi-seed re-evaluation as a reusable script rather than notebook cells
+
+---
+
+## 👥 Team
+
+- Member 1
+- Member 2
